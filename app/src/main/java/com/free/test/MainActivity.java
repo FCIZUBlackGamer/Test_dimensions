@@ -17,29 +17,19 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity {
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     View view;
     RecyclerView recyclerView;
     List<String> strings;
     RecyclerView.Adapter adapter;
     int numItems = 0;
-    ConnectionReceiver receiver;
-    IntentFilter intentFilter;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.v);
-        mSwipeRefreshLayout.setOnRefreshListener(MainActivity.this);
         super.onCreate(savedInstanceState);
-
-        receiver = new ConnectionReceiver();
-        intentFilter = new IntentFilter("com.free.test.SOME_ACTION");
-
-        registerReceiver(receiver, intentFilter);
-
 
         recyclerView = findViewById(R.id.rec);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -81,13 +71,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     protected void onResume() {
         super.onResume();
 
-        try {
-            Intent intent = getIntent();
-            if (intent.getStringExtra("Status") != null && !intent.getStringExtra("Status").isEmpty())
-            Toast.makeText(this, intent.getStringExtra("Status"), Toast.LENGTH_LONG).show();
-        }catch (Exception e){
+        Intent intent = new Intent(this,MyReceiver.class);
 
-        }
+        startService(intent);
+
 
 
     }
@@ -95,19 +82,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(receiver);
+        try {
+            stopService(intent);
+        }catch (Exception e){
+
+        }
     }
 
-
-    @Override
-    public void onRefresh() {
-        Intent intent = new Intent("com.free.test.SOME_ACTION");
-        sendBroadcast(intent);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }, 1500);
-    }
 }
