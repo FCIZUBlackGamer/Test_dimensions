@@ -42,6 +42,7 @@ public class MyReceiver extends Service {
             try {
                 Toast.makeText(this, "Network is connected", Toast.LENGTH_LONG).show();
                 stopSelf();
+                //Todo: Start Activity
             } catch (Exception e) {
                 e.printStackTrace();
             }
